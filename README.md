@@ -87,6 +87,30 @@ Then create the cloudbuild.yaml file. There you can specifiy which resources sho
 
   </details>
 
+- Remember to also grant the service account of cloud scheduler the permission to invoke the cloud function _github-func-a_.
+
+  <details>
+  <summary>Show general code snippet:</summary>
+
+  ```shell
+  gcloud functions add-invoker-policy-binding <function-name> \
+    --member="serviceAccount:<service-acc-name>@<project-id>.iam.gserviceaccount.com" \
+    --region='<your-region>'
+  ```
+
+  </details>
+
+  <details open>
+  <summary>Show example code snippet:</summary>
+
+  ```shell
+  gcloud functions add-invoker-policy-binding github-func-a \
+    --member="serviceAccount:cloud-scheduler@propane-nomad-396712.iam.gserviceaccount.com" \
+    --region='europe-west3'
+  ```
+
+  </details>
+
 ## Connect your GCP project with a GitHub repository
 
 In order to connect a GitHub repository follow these steps:
