@@ -22,7 +22,39 @@ Overall, Google Cloud Build is a powerful tool that simplifies and enhances your
 ## Prepare code and create cloudbuild yaml
 
 Make sure you prepare your code that will be used by the gcp resources later on.
-Then create the cloudbuild.yaml file. There you can specifiy which resources should be deployed. Keep in mind that all resources listed there will be deployed on every push by default. This can lead to errors if certain resources (e.g. Pub/Sub topic) already exist. Therefore you need to include checks and conditions wheter a resource should be deployed or not.
+Then create the cloudbuild.yaml file. There you can specifiy which resources should be deployed. Keep in mind that all resources listed there will be deployed on every push by default. This can lead to errors if certain resources (e.g. Pub/Sub topic) already exist. Therefore you need to include checks and conditions wheter a resource should be deployed or not. This could be done like this:
+
+```yaml
+steps:
+  # 0. Check if resources should be deployed
+  - name: "gcr.io/cloud-builders/gcloud"
+    args: ["pubsub", "topics", "describe", "github-topic"]
+    id: check-topic
+    ignoreErrors: true
+
+  # 1. Create new Pub/Sub topic
+  - name: "gcr.io/cloud-builders/gcloud"
+    args: ["pubsub", "topics", "create", "github-topic"]
+    condition: steps.check-topic.results.returnCode != 0 # Only deploy if topic doesn't exist
+```
+
+Also you might want to exclude certain files like README.md from triggering the cloud build yaml every time it is updated.
+This can be done like this:
+
+```yaml
+# Define the affected branches
+substitutions:
+  _BRANCH: ".*" # Match all branches by default
+
+# Trigger only on pushes that modify files other than the README
+trigger:
+  branch: $_BRANCH
+  event: push
+  files:
+    - "**/*.*"
+  excludedFiles:
+    - "**/README.md"
+```
 
 ## Connect your GCP project with a GitHub repository
 
