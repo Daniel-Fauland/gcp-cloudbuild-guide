@@ -3,7 +3,6 @@ steps:
   - name: "gcr.io/cloud-builders/gcloud"
     args: ["pubsub", "topics", "describe", "github-topic"]
     id: check-topic
-    ignoreErrors: true
 
   - name: "gcr.io/cloud-builders/gcloud"
     args:
@@ -13,7 +12,6 @@ steps:
       - "github-func-a-scheduler"
       - "--format=value(name)"
     id: check-scheduler
-    ignoreErrors: true
 
   # 1. Create new Pub/Sub topic
   - name: "gcr.io/cloud-builders/gcloud"
