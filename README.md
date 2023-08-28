@@ -33,47 +33,59 @@ Then create the cloudbuild.yaml file. There you can specifiy which resources sho
 
 - Pub/Sub topic deployment:
 
-  General code snippet:
+  <details>
+  <summary>Show general code snippet:</summary>
 
   ```shell
   gcloud pubsub topics <topic-name>
   ```
 
-  Example code snippet:
+  </details>
+
+  <details open>
+  <summary>Show example code snippet:</summary>
 
   ```shell
   gcloud pubsub topics create github-topic
   ```
 
+  </details>
+
 - Cloud scheduler deployment:
 
-  General code snippet:
+  <details>
+  <summary>Show general code snippet:</summary>
 
   ```shell
   gcloud scheduler jobs create http <schedule-name> \
   --schedule="0 4 * * *" \
   --http-method=POST \
   --uri="your-cloud-functions-url" \
-  --message-body='{"project_id": "your-project-id", "bucket_name": "your-bucket", "topic_name": "your-topic"}' \
+  --message-body='{"key": "value"}' \
   --headers="Content-Type=application/json" \
   --attempt-deadline=1800s \
   --location='your-region' \
   --oidc--service-account-email=<service-acc-name>@<project-id>.iam.gserviceaccount.com
   ```
 
-  Example code snippet:
+  </details>
+
+  <details open>
+  <summary>Show example code snippet:</summary>
 
   ```shell
   gcloud scheduler jobs create http github-func-a-scheduler \
   --schedule="0 4 * * *" \
   --http-method=POST \
   --uri="https://europe-west3-propane-nomad-396712.cloudfunctions.net/github-func-a" \
-  --message-body='{"project_id": "propane-nomad-396712", "my_msg": "Hello World!"}' \
+  --message-body='{"project_id": "propane-nomad-396712", "topic_name": "github-topic", "my_msg": "Hello World!"}' \
   --headers="Content-Type=application/json" \
   --attempt-deadline=1800s \
   --location='europe-west3' \
   --oidc-service-account-email=cloud-scheduler@propane-nomad-396712.iam.gserviceaccount.com
   ```
+
+  </details>
 
 ## Connect your GCP project with a GitHub repository
 
@@ -98,7 +110,8 @@ In order to connect a GitHub repository follow these steps:
 
 2.  If not done already enable the _Cloud Resource Manager API_ or your builds will fail. In case your builds will fail later on you can try giving the service account that is used by cloudbuild the serviceAccountTokenCreator role.
 
-    General code snippet:
+    <details>
+    <summary>Show general code snippet:</summary></summary>
 
     ```shell
     gcloud projects add-iam-policy-binding <project-id> \
@@ -106,13 +119,18 @@ In order to connect a GitHub repository follow these steps:
         --role=roles/iam.serviceAccountTokenCreator
     ```
 
-    Example code snippet:
+    </details>
+
+    <details open>
+    <summary>Show example code snippet:</summary>
 
     ```shell
     gcloud projects add-iam-policy-binding propane-nomad-396712 \
         --member=serviceAccount:service-973117053722@gcp-sa-pubsub.iam.gserviceaccount.com \
         --role=roles/iam.serviceAccountTokenCreator
     ```
+
+    </details>
 
 3.  Whenever you push any changes to the repo cloud build will automatically trigger and deploy the resources specified in the cloudbuild.yaml file. However cloudbuild has some major downsides:
 
