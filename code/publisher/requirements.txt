@@ -1,0 +1,7 @@
+google-cloud-pubsub
+google-api-core==2.11.1 ; python_version >= "3.10" and python_version < "4.0"
+google-auth==2.17.3 ; python_version >= "3.10" and python_version < "4.0"
+google-cloud-core==2.3.3 ; python_version >= "3.10" and python_version < "4.0"
+google-crc32c==1.5.0 ; python_version >= "3.10" and python_version < "4.0"
+google-resumable-media==2.5.0 ; python_version >= "3.10" and python_version < "4.0"
+googleapis-common-protos==1.60.0 ; python_version >= "3.10" and python_version < "4.0"
