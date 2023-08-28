@@ -19,6 +19,11 @@ Google Cloud Build is a fully managed Continuous Integration/Continuous Deployme
 
 Overall, Google Cloud Build is a powerful tool that simplifies and enhances your CI/CD process, ensuring efficient development workflows, faster delivery of features, and improved software quality.
 
+## Prepare code and create cloudbuild yaml
+
+Make sure you prepare your code that will be used by the gcp resources later on.
+Then create the cloudbuild.yaml file. There you can specifiy which resources should be deployed. Keep in mind that all resources listed there will be deployed on every push by default. This can lead to errors if certain resources (e.g. Pub/Sub topic) already exist. Therefore you need to include checks and conditions wheter a resource should be deployed or not.
+
 ## Connect your GCP project with a GitHub repository
 
 In order to connect a GitHub repository follow these steps:

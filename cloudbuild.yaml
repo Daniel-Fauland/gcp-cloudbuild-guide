@@ -1,7 +1,24 @@
 steps:
+  # 0. Check if resources should be deployed
+  - name: "gcr.io/cloud-builders/gcloud"
+    args: ["pubsub", "topics", "describe", "github-topic"]
+    id: check-topic
+    ignoreErrors: true
+
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      - "scheduler"
+      - "jobs"
+      - "describe"
+      - "github-func-a-scheduler"
+      - "--format=value(name)"
+    id: check-scheduler
+    ignoreErrors: true
+
   # 1. Create new Pub/Sub topic
   - name: "gcr.io/cloud-builders/gcloud"
     args: ["pubsub", "topics", "create", "github-topic"]
+    condition: steps.check-topic.results.returnCode != 0 # Only deploy if topic doesn't exist
 
   # 2. Deploy cloud function A that will publish messages to the new topic
   - name: "gcr.io/cloud-builders/gcloud"
@@ -57,3 +74,17 @@ steps:
       - "--attempt-deadline=1800s"
       - "--oidc-service-account-email=cloud-scheduler@propane-nomad-396712.iam.gserviceaccount.com"
       - "--location=europe-west3"
+    condition: steps.check-scheduler.results.returnCode != 0 # Create only if job doesn't exist
+
+# Define the affected branches
+substitutions:
+  _BRANCH: ".*" # Match all branches by default
+
+# Trigger only on pushes that modify files other than the README
+trigger:
+  branch: $_BRANCH
+  event: push
+  files:
+    - "**/*.*"
+  excludedFiles:
+    - "**/README.*"
