@@ -96,13 +96,23 @@ In order to connect a GitHub repository follow these steps:
 
 1.  Now go to _Triggers_ and create a new trigger. Choose a name, region and an Event on which cloud build is triggered (e.g. _push to branch_). Select 2nd gen as the source and choose a repository. Your default branch will be selected automatically. You can also select your own service account that will be used to deploy your resources. If nothing is specified the default cloud build service account will be used.
 
-2.  If not done already enable the _Cloud Resource Manager API_ or your builds will fail. Also make sure the service account that is used by cloudbuild has the serviceAccountTokenCreator role.
+2.  If not done already enable the _Cloud Resource Manager API_ or your builds will fail. In case your builds will fail later on you can try giving the service account that is used by cloudbuild the serviceAccountTokenCreator role.
 
-```shell
-gcloud projects add-iam-policy-binding propane-nomad-396712 \
-    --member=serviceAccount:service-973117053722@gcp-sa-pubsub.iam.gserviceaccount.com \
-    --role=roles/iam.serviceAccountTokenCreator
-```
+    General code snippet:
+
+    ```shell
+    gcloud projects add-iam-policy-binding <project-id> \
+        --member=serviceAccount:<your-service-acc>@gcp-sa-pubsub.iam.gserviceaccount.com \
+        --role=roles/iam.serviceAccountTokenCreator
+    ```
+
+    Example code snippet:
+
+    ```shell
+    gcloud projects add-iam-policy-binding propane-nomad-396712 \
+        --member=serviceAccount:service-973117053722@gcp-sa-pubsub.iam.gserviceaccount.com \
+        --role=roles/iam.serviceAccountTokenCreator
+    ```
 
 3.  Whenever you push any changes to the repo cloud build will automatically trigger and deploy the resources specified in the cloudbuild.yaml file. However cloudbuild has some major downsides:
 
